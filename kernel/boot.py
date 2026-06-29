@@ -1,17 +1,14 @@
 import time
 
-def boot():
-    print("Starting VirtualOS...")
-    time.sleep(1)
+class BootLoader:
+    def start(self):
+        print("S0S Booting...")
+        time.sleep(1)
 
-    print("Loading Kernel...")
-    time.sleep(1)
+        print("Loading Kernel...")
+        time.sleep(1)
 
-    print("Loading File System...")
-    time.sleep(1)
+        print("Initializing system components...")
+        time.sleep(1)
 
-    print("Loading Terminal...")
-    time.sleep(1)
-
-    print("System Ready!")
-
+        print("Boot complete!\n")

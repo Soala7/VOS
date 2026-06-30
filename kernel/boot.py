@@ -1,14 +1,6 @@
-import time
+from kernel.kernel import Kernel
 
-class BootLoader:
-    def start(self):
-        print("S0S Booting...")
-        time.sleep(1)
 
-        print("Loading Kernel...")
-        time.sleep(1)
-
-        print("Initializing system components...")
-        time.sleep(1)
-
-        print("Boot complete!\n")
+def boot_system():
+    kernel = Kernel()
+    kernel.boot()

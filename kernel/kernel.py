@@ -1,16 +1,28 @@
+from core.services_manager import ServiceManager
+from core.logger import Logger
+from filesystem.filesystem import FileSystem
+from process.manager import ProcessManager
+
+
 class Kernel:
     def __init__(self):
-        self.file_manager = None
-        self.memory_manager = None
-        self.process_manager = None
+        self.services_manager = ServiceManager()
 
-    def connect_managers(self, file_manager, memory_manager, process_manager):
-        self.file_manager = file_manager
-        self.memory_manager = memory_manager
-        self.process_manager = process_manager
+    def boot(self):
+        logger = Logger("Kernel")
+        self.services_manager.register("logger", logger)
 
-    def status(self):
-        print("Kernel status: Running")
-        print(f"File Manager: {self.file_manager}")
-        print(f"Memory Manager: {self.memory_manager}")
-        print(f"Process Manager: {self.process_manager}")
+        logger.info("Boot sequence starting...")
+
+        self._register_core_services()
+
+        logger.info("Kernel boot complete.")
+
+    def _register_core_services(self):
+        sm = self.services_manager
+        logger = sm.get("logger")
+
+        sm.register("filesystem", FileSystem())
+        sm.register("process", ProcessManager())
+
+        logger.info("Core services registered.")

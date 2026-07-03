@@ -13,7 +13,6 @@ class EventBus:
 
         if event_name not in self._listeners:
             return
-
         event = {
             "name": event_name,
             "data": data

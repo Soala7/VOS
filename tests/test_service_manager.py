@@ -1,5 +1,8 @@
-from core.services_manager import ServiceManager
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from core.services_manager import ServiceManager
 
 def test_service_manager():
     sm = ServiceManager()

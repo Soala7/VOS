@@ -1,6 +1,5 @@
 from datetime import datetime
 
-
 class Logger:
     def __init__(self, name="VOS"):
         self.name = name

@@ -57,7 +57,7 @@ The roadmap is organized into major development milestones. Each milestone build
 
 # Phase 4 — Desktop Environment
 
-**Status:** Planned
+**Status:** In Progress
 
 ## Objectives
 

@@ -1,5 +1,8 @@
-from kernel.kernel import Kernel
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from kernel.kernel import Kernel
 
 def test_kernel():
     kernel = Kernel()

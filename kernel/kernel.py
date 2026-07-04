@@ -1,7 +1,7 @@
 from core.services_manager import ServiceManager
 from core.logger import Logger
 from core.event_bus import EventBus
-
+from resources.resource_manager import ResourceManager
 from filesystem.filesystem import FileSystem
 from process.manager import ProcessManager
 
@@ -10,6 +10,8 @@ class Kernel:
     def __init__(self):
         self.service_manager = ServiceManager()
         self.event_bus = EventBus()
+        self.resources = ResourceManager()
+
 
     def boot(self):
         logger = Logger("Kernel")

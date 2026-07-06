@@ -1,18 +1,55 @@
-from desktop.ui.core.component import Component
-from desktop.ui.core.event import MouseEvent, EventType
+"""
+Gorgon OS (VOS)
+
+Button widget.
+"""
+
+from __future__ import annotations
+
+from desktop.ui.widgets.label import Label
+from desktop.ui.core.event import MousePressEvent, MouseReleaseEvent
 
 
-class Button(Component):
-    def __init__(self, x, y, width, height, text="Button"):
-        super().__init__(x, y, width, height)
-        self.text = text
-        self.clicked = False
+class Button(Label):
+    """
+    Basic clickable button.
+    """
 
-    def on_event(self, event) -> bool:
-        if isinstance(event, MouseEvent):
-            if event.event_type == EventType.MOUSE_PRESS:
-                self.clicked = True
-                print(f"[BUTTON CLICKED] {self.text}")
-                return True  # event consumed
+    def __init__(
+        self,
+        text: str = "Button",
+        name: str = "Button",
+    ) -> None:
 
-        return False
+        super().__init__(text, name)
+
+        self.focusable = True
+
+        self.pressed = False
+
+        self.on_click = None
+
+    def click(self) -> None:
+
+        if callable(self.on_click):
+            self.on_click()
+
+    def handle_event(self, event) -> None:
+
+        super().handle_event(event)
+
+        if isinstance(event, MousePressEvent):
+
+            self.pressed = True
+
+            event.handled = True
+
+        elif isinstance(event, MouseReleaseEvent):
+
+            if self.pressed:
+
+                self.pressed = False
+
+                self.click()
+
+                event.handled = True

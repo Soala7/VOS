@@ -7,10 +7,9 @@ Shell
 from __future__ import annotations
 
 from desktop.shell.desktop import Desktop
-from desktop.shell.taskbar import Taskbar
+from desktop.shell.dock import Dock
 from desktop.shell.start_menu import StartMenu
 from desktop.shell.notification_center import NotificationCenter
-from desktop.shell.desktop_icons import DesktopIcons
 
 
 class Shell:
@@ -22,15 +21,15 @@ class Shell:
 
         self.desktop = Desktop()
 
-        self.taskbar = Taskbar()
+        self.dock = Dock()
 
         self.start_menu = StartMenu()
 
         self.notification_center = NotificationCenter()
 
-        self.desktop_icons = DesktopIcons()
+        # Order matters (draw order)
 
-        self.desktop.add_child(self.desktop_icons)
+        self.desktop.add_child(self.dock)
 
         self.desktop.add_child(self.start_menu)
 

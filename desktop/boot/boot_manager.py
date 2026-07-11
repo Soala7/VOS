@@ -42,7 +42,13 @@ class BootManager:
 
         self.state = self.BOOT
 
+        # Force clean startup every launch
+        self.boot_screen.finished = False
+        self.login_screen.logged_in = False
+
         self.boot_screen.start()
+
+        print("[BOOT] State:", self.state)
 
     # --------------------------------------------------
     # Update
@@ -57,12 +63,14 @@ class BootManager:
             if self.boot_screen.finished:
 
                 self.state = self.LOGIN
+                print("[BOOT] -> LOGIN")
 
         elif self.state == self.LOGIN:
 
             if self.login_screen.logged_in:
 
                 self.state = self.DESKTOP
+                print("[LOGIN] -> DESKTOP")
 
         elif self.state == self.DESKTOP:
 

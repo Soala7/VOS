@@ -1,7 +1,7 @@
 """
 Gorgon OS (VOS)
 
-Taskbar
+Floating Dock
 """
 
 from __future__ import annotations
@@ -11,7 +11,18 @@ import pygame
 
 class Taskbar:
 
-    HEIGHT = 64
+    HEIGHT = 72
+    RADIUS = 24
+
+    def __init__(self):
+
+        self.apps = [
+            "Explorer",
+            "Browser",
+            "Terminal",
+            "Settings",
+            "Store",
+        ]
 
     def draw(self, renderer):
 
@@ -20,55 +31,84 @@ class Taskbar:
         width = surface.get_width()
         height = surface.get_height()
 
-        # Background
+        dock_width = 540
+        dock_height = 72
+
+        x = (width - dock_width) // 2
+        y = height - 95
+
+        # -----------------------------
+        # Dock Background
+        # -----------------------------
 
         pygame.draw.rect(
             surface,
-            (34, 37, 45),
+            (36, 40, 50),
             (
-                18,
-                height - 82,
-                width - 36,
-                64,
+                x,
+                y,
+                dock_width,
+                dock_height,
             ),
-            border_radius=22,
+            border_radius=self.RADIUS,
         )
 
+        # -----------------------------
         # Start Button
+        # -----------------------------
+
+        start_x = x + 42
+        start_y = y + dock_height // 2
 
         pygame.draw.circle(
             surface,
-            (63, 130, 255),
+            (60, 125, 255),
             (
-                58,
-                height - 50,
+                start_x,
+                start_y,
             ),
             18,
         )
 
-        # App Icons
+        # -----------------------------
+        # Icons
+        # -----------------------------
 
-        x = 115
+        icon_x = start_x + 55
 
-        for _ in range(5):
+        for _ in self.apps:
 
             pygame.draw.circle(
                 surface,
-                (200, 200, 200),
+                (215, 215, 220),
                 (
-                    x,
-                    height - 50,
+                    icon_x,
+                    start_y,
                 ),
-                14,
+                15,
             )
 
-            x += 46
+            # Running indicator
 
+            pygame.draw.circle(
+                surface,
+                (90, 170, 255),
+                (
+                    icon_x,
+                    start_y + 24,
+                ),
+                3,
+            )
+
+            icon_x += 52
+
+        # -----------------------------
         # Clock
+        # -----------------------------
 
         font = pygame.font.SysFont(
             "arial",
-            20,
+            18,
         )
 
         renderer.draw_text(
@@ -76,7 +116,7 @@ class Taskbar:
             font,
             (255, 255, 255),
             pygame.Vector2(
-                width - 80,
-                height - 60,
+                x + dock_width - 58,
+                y + 25,
             ),
         )

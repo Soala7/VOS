@@ -6,36 +6,70 @@ Desktop Icons
 
 from __future__ import annotations
 
+import pygame
+
 from desktop.ui.widgets.panel import Panel
-from desktop.ui.layout.vertical_layout import VerticalLayout
+from desktop.ui.core.component import Component
 
 
 class DesktopIcons(Panel):
-    """
-    Container for desktop icons.
-    """
 
     def __init__(self) -> None:
 
         super().__init__("DesktopIcons")
 
-        self.layout = VerticalLayout(
-            spacing=12,
-            margin=12,
-        )
+        self.icons = [
+            ("Explorer", (70, 70)),
+            ("Browser", (70, 170)),
+            ("Terminal", (70, 270)),
+            ("Settings", (70, 370)),
+        ]
 
-    def add_icon(self, icon) -> None:
+    def add_icon(self, icon: Component) -> None:
 
         self.add_child(icon)
 
-        self.layout.apply(self)
-
-    def remove_icon(self, icon) -> None:
+    def remove_icon(self, icon: Component) -> None:
 
         self.remove_child(icon)
-
-        self.layout.apply(self)
 
     def clear_icons(self) -> None:
 
         self.clear_children()
+
+    def draw(self, renderer):
+
+        surface = renderer.surface
+
+        font = pygame.font.SysFont(
+            "arial",
+            18,
+        )
+
+        for name, (x, y) in self.icons:
+
+            # icon
+
+            pygame.draw.circle(
+                surface,
+                (210, 210, 220),
+                (
+                    x,
+                    y,
+                ),
+                24,
+            )
+
+            # text
+
+            renderer.draw_text(
+                name,
+                font,
+                (255, 255, 255),
+                pygame.Vector2(
+                    x - 25,
+                    y + 35,
+                ),
+            )
+
+        super().draw(renderer)

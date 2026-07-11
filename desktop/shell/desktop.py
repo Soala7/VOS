@@ -9,7 +9,12 @@ from __future__ import annotations
 from desktop.ui.widgets.panel import Panel
 from desktop.shell.wallpaper import Wallpaper
 from desktop.ui.window.window_manager import WindowManager
-from desktop.shell.taskbar import Taskbar
+from desktop.shell.compositor import Compositor
+from desktop.shell.dock import Dock
+from desktop.shell.desktop_icons import DesktopIcons
+from desktop.shell.start_menu import StartMenu
+from desktop.shell.notification_center import NotificationCenter
+import pygame
 
 
 class Desktop(Panel):
@@ -25,7 +30,15 @@ class Desktop(Panel):
 
         self.window_manager = WindowManager()
 
-        self.taskbar = Taskbar()
+        self.compositor = Compositor(self)
+
+        self.dock = Dock()
+
+        self.desktop_icons = DesktopIcons()
+
+        self.start_menu = StartMenu()
+
+        self.notification_center = NotificationCenter()
 
     def set_wallpaper(self, image) -> None:
 
@@ -45,10 +58,10 @@ class Desktop(Panel):
 
         self.window_manager.update(dt)
 
-    def draw(self, renderer):
-        renderer.clear((24, 31, 46))
+    def draw(self, renderer) -> None:
 
-        self.taskbar.draw(renderer)
+        self.compositor.draw(renderer)
+
     def handle_event(self, event) -> None:
 
         super().handle_event(event)

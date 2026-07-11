@@ -21,7 +21,7 @@ def main() -> None:
 
     pygame.init()
 
-    pygame.display.set_caption("Gorgon OS")
+    pygame.display.set_caption("Gorgon VOS")
 
     screen = pygame.display.set_mode(
         (

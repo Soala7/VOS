@@ -37,6 +37,8 @@ class Component:
 
         self.parent: Component | None = None
         self.children: list[Component] = []
+        # Rendering
+        self.layer: int = 0
 
         # --------------------------------------------------
         # Transform
@@ -174,7 +176,10 @@ class Component:
 
         self.on_draw(renderer)
 
-        for child in self.children:
+        for child in sorted(
+            self.children,
+            key=lambda c: c.layer,
+        ):
             child.draw(renderer)
 
     # ======================================================

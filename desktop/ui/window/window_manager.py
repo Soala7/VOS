@@ -111,5 +111,5 @@ class WindowManager:
             window.handle_event(event)
 
             if getattr(event, "handled", False):
-
+                self.focus_window(window)
                 break

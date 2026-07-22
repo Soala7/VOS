@@ -3,6 +3,7 @@ from core.logger import Logger
 from core.event_bus import EventBus
 from resources.resource_manager import ResourceManager
 from filesystem.filesystem import FileSystem
+from bridge.vos_api import vos_api
 from process.manager import ProcessManager
 
 
@@ -31,13 +32,46 @@ class Kernel:
         logger.info("Kernel boot complete.")
 
     def _register_core_services(self):
+
         sm = self.service_manager
         logger = sm.get("logger")
 
-        sm.register("filesystem", FileSystem(self.event_bus))
-        sm.register("process", ProcessManager(self.event_bus))
 
-        logger.info("Core services registered.")
+        filesystem = FileSystem(
+            self.event_bus
+        )
+
+        process_manager = ProcessManager(
+            self.event_bus
+        )
+
+
+        sm.register(
+            "filesystem",
+            filesystem
+        )
+
+
+        sm.register(
+            "process",
+            process_manager
+        )
+
+
+        vos_api.register_filesystem(
+            filesystem
+        )
+
+
+        sm.register(
+            "vos_api",
+            vos_api
+        )
+
+
+        logger.info(
+            "Core services registered."
+        )
 
     def _setup_event_system(self):
         bus = self.event_bus

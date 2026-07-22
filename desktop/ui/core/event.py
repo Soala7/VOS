@@ -26,6 +26,7 @@ class EventType(Enum):
 
     KEY_PRESS = auto()
     KEY_RELEASE = auto()
+    MOUSE_CLICK = auto()
 
     WINDOW_MOVE = auto()
     WINDOW_RESIZE = auto()
@@ -181,14 +182,23 @@ class MouseDoubleClickEvent(MouseEvent):
 @dataclass(slots=True)
 class KeyboardEvent(UIEvent):
     key: int = 0
+    unicode: str = ""
     modifier: KeyModifier = KeyModifier.NONE
 
 
 class KeyPressEvent(KeyboardEvent):
-    def __init__(self, key: int, modifier: KeyModifier = KeyModifier.NONE):
+
+    def __init__(
+        self,
+        key: int,
+        unicode: str = "",
+        modifier: KeyModifier = KeyModifier.NONE,
+    ):
+
         self._init_base(
             EventType.KEY_PRESS,
             key=key,
+            unicode=unicode,
             modifier=modifier,
         )
 
@@ -198,6 +208,7 @@ class KeyPressEvent(KeyboardEvent):
         self.timestamp = monotonic()
         self.source = None
         self.key = kwargs.get("key", 0)
+        self.unicode = kwargs.get("unicode")or("")
         self.modifier = kwargs.get("modifier", KeyModifier.NONE)
 
 
@@ -217,6 +228,24 @@ class KeyReleaseEvent(KeyboardEvent):
         self.key = kwargs.get("key", 0)
         self.modifier = kwargs.get("modifier", KeyModifier.NONE)
 
+# ==========================================================
+# Mouse Events
+# ==========================================================
+
+@dataclass(slots=True)
+class MouseEvent(UIEvent):
+    x: float = 0
+    y: float = 0
+
+class MouseClickEvent(UIEvent):
+
+    def __init__(self, x: float, y: float):
+        self.event_type = EventType.MOUSE_CLICK
+        self.handled = False
+        self.timestamp = monotonic()
+        self.source = None
+        self.x = x
+        self.y = y
 
 # ==========================================================
 # Window Events

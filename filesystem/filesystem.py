@@ -1,20 +1,278 @@
+"""
+VOS Virtual Filesystem
+
+Manages files and folders inside the virtual operating system.
+"""
+
+from .folder import Folder
+
+
 class FileSystem:
+
     def __init__(self, event_bus=None):
-        self.files = {}
         self.event_bus = event_bus
 
-    def create_file(self, path, content=""):
-        self.files[path] = content
+        self.root = Folder("/")
+        self.current_directory = self.root
+        self._create_default_structure()
+    def _create_default_structure(self):
+        """
+        Creates the default VOS directory structure.
+        """
+
+        self.create_folder("/apps")
+        self.create_folder("/home")
+        self.create_folder("/system")
+        self.create_folder("/temp")
+        self.create_folder("/users")
+
+        # Default user
+        self.create_folder("/users/guest")
+
+    def get_current_path(self):
+
+        path = []
+
+        current = self.current_directory
+
+
+        while current.parent is not None:
+
+            path.append(current.name)
+
+            current = current.parent
+
+
+        return "/" + "/".join(
+            reversed(path)
+        )
+    
+    def create_folder(self, path):
+        """
+        Creates a folder at the given path.
+        Supports both absolute and relative paths.
+        """
+
+        print(f"[FILESYSTEM] create folder request: {path}")
+
+
+        if path.startswith("/"):
+            current = self.root
+        else:
+            current = self.current_directory
+
+
+        parts = self._split_path(path)
+
+
+        for part in parts:
+
+            if part not in current.folders:
+
+                new_folder = Folder(
+                    part,
+                    parent=current
+                )
+
+                current.add_folder(
+                    new_folder
+                )
+
+                print(
+                    f"[FILESYSTEM] created folder: {part}"
+                )
+
+
+            current = current.folders[part]
+
 
         if self.event_bus:
-            self.event_bus.emit("file_created", {"path": path})
+            self.event_bus.emit(
+                "folder_created",
+                {"path": path}
+            )
+
+
+        return True
+
+    def create_file(self, path, content=""):
+        """
+        Creates a file in the current directory or specified path.
+        """
+
+        print(f"[FILESYSTEM] create file request: {path}")
+
+
+        parts = self._split_path(path)
+
+
+        filename = parts.pop()
+
+
+        if path.startswith("/"):
+            current = self.root
+        else:
+            current = self.current_directory
+
+
+
+        # Move into target folder if needed
+        for part in parts:
+
+            if part not in current.folders:
+                print(
+                    "[FILESYSTEM] folder not found:",
+                    part
+                )
+                return False
+
+
+            current = current.folders[part]
+
+
+
+        # Check existing file
+        if filename in current.files:
+
+            print(
+                "[FILESYSTEM] file already exists"
+            )
+
+            return False
+
+
+
+        current.add_file(
+            filename,
+            content
+        )
+
+
+        print(
+            f"[FILESYSTEM] created file: {filename}"
+        )
+
+
+        return True
+
+    def change_directory(self, path):
+        """
+        Changes the current working directory.
+        """
+
+        print("[FILESYSTEM] cd request:", path)
+
+        folder = self._get_folder(path)
+
+        print("[FILESYSTEM] found folder:", folder)
+
+
+        if folder is None:
+            return False
+
+
+        self.current_directory = folder
+
+        return True
+    
+    def read_file(self, path):
+
+        folder_path, filename = self._split_file_path(path)
+
+        folder = self._get_folder(folder_path)
+
+        if folder is None:
+            return None
+
+
+        return folder.files.get(filename)
+
+
 
     def delete_file(self, path):
-        if path in self.files:
-            del self.files[path]
+
+        folder_path, filename = self._split_file_path(path)
+
+        folder = self._get_folder(folder_path)
+
+        if folder and filename in folder.files:
+
+            folder.remove_file(filename)
+
 
             if self.event_bus:
-                self.event_bus.emit("file_deleted", {"path": path})
+                self.event_bus.emit(
+                    "file_deleted",
+                    {"path": path}
+                )
 
-    def read_file(self, path):
-        return self.files.get(path)
+            return True
+
+
+        return False
+
+    def list_directory(self, path=None):
+        """
+        Lists contents of a directory.
+        """
+
+        if path is None or path == "":
+            return self.current_directory.list_contents()
+
+
+        folder = self._get_folder(path)
+
+
+        if folder:
+            return folder.list_contents()
+
+
+        return None
+
+
+
+    def _split_path(self, path):
+
+        return [
+            part
+            for part in path.split("/")
+            if part
+        ]
+
+
+
+    def _split_file_path(self, path):
+
+        parts = self._split_path(path)
+
+        filename = parts.pop()
+
+        folder_path = "/" + "/".join(parts)
+
+        return folder_path, filename
+
+
+
+    def _get_folder(self, path):
+
+        if path == "/":
+            return self.root
+
+
+        parts = self._split_path(path)
+
+        current = self.root
+
+
+        for part in parts:
+
+            if part not in current.folders:
+                return None
+
+
+            current = current.folders[part]
+
+
+        return current
+    
+    

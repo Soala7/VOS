@@ -110,13 +110,3 @@ class Taskbar:
             "arial",
             18,
         )
-
-        renderer.draw_text(
-            "12:45",
-            font,
-            (255, 255, 255),
-            pygame.Vector2(
-                x + dock_width - 58,
-                y + 25,
-            ),
-        )

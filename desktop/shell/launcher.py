@@ -6,6 +6,7 @@ import datetime
 
 from desktop.ui.widgets.widget import Widget
 from desktop.assests.icon_manager import IconManager
+from desktop.ui.core.event import MousePressEvent, MouseButton
 
 
 class Launcher(Widget):
@@ -97,7 +98,7 @@ class Launcher(Widget):
 
     def close(self):
         """Hide the launcher."""
-        pass
+        self.visible = False
 
     def toggle(self):
         """Toggle launcher visibility state."""
@@ -185,14 +186,26 @@ class Launcher(Widget):
         scaled_icon = pygame.transform.smoothscale(icon, (size, size))
         surface.blit(scaled_icon, (center[0] - size // 2, center[1] - size // 2))
 
-    def handle_click(self, mouse_pos):
-        """Must be called from your main Pygame event loop when MOUSEBUTTONDOWN triggers."""
+    def handle_click(self, mouse_pos) -> bool:
+        """Processes launcher interactions. 
+        Closes launcher if click lands outside of all interactive panels.
+        Returns True if an interaction was processed, False otherwise.
+        """
         if not self.visible:
-            return
+            return False
 
-        # Let's locate the 3 utility buttons at the bottom of the clock module panel:
-        # Base offset math matches drawing code
-        panel_y = 330 # Base layout reference
+        # Define the bounding boxes matching our draw layout coordinates
+        panel_y = 330
+        panel_rect = pygame.Rect(470, panel_y, 760, 580)
+        qa_panel_rect = pygame.Rect(panel_rect.right + 22, panel_rect.y, 78, panel_rect.height)
+
+        # RULE 1: If clicked completely outside both panels, close the launcher!
+        if not panel_rect.collidepoint(mouse_pos) and not qa_panel_rect.collidepoint(mouse_pos):
+            print("[Launcher] Clicked outside boundaries. Closing launcher.")
+            self.visible = False
+            return True  # Handled
+
+        # --- Process internal clock panel clicks ---
         clock_panel_x = 470 + 565
         clock_panel_y = panel_y + 580 - 260
         util_y = clock_panel_y + 240 - 35
@@ -202,15 +215,18 @@ class Launcher(Widget):
             cx = clock_panel_x + 40 + (i * util_spacing)
             distance = math.hypot(mouse_pos[0] - cx, mouse_pos[1] - util_y)
             
-            if distance <= 16: # 16px radius check
+            if distance <= 16:  # 16px radius check
                 if i == 0:
                     print("[Clock Widget] Alarm icon triggered!")
                 elif i == 1:
                     print("[Clock Widget] Custom time increment triggered!")
-                    self.custom_time_offset += 3600 # Advance time by 1 hour
+                    self.custom_time_offset += 3600  # Advance time by 1 hour
                 elif i == 2:
                     print("[Clock Widget] Toggle clock mode triggered!")
                     self.clock_is_digital = not self.clock_is_digital
+                return True
+
+        return True
 
     def draw_panel(self, panel_surface, rect, fill_color=(255, 255, 255, 45), outline_color=(255, 255, 255, 120), border_radius=28, shadow_alpha=35, outline_width=1):
         """Draw a rounded panel with a subtle shadow and a single-pixel highlight outline."""

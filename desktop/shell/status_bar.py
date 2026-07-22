@@ -20,9 +20,9 @@ class StatusBar(Widget):
         super().__init__("StatusBar")
 
         # Top-right icons
-        self.notification = IconManager.get("launcher/notification", 35)
-        self.wifi = IconManager.get("launcher/wifi", 35)
-        self.volume = IconManager.get("launcher/volume", 35)
+        self.notification = IconManager.get("launcher/notification", 24)
+        self.wifi = IconManager.get("launcher/wifi", 24)
+        self.volume = IconManager.get("launcher/volume", 24)
 
         # Bottom-right - Now loaded at a larger 44px base size to match its new layout role
         self.battery = IconManager.get("launcher/battery", 44)
@@ -65,8 +65,8 @@ class StatusBar(Widget):
         # -------------------------
 
         # Coordinates for our 3 icons layout
-        start_x = width - 160
-        y_pos = 18
+        start_x = width - 180
+        y_pos = height - 900
         spacing = 50
         base_size = 35
 

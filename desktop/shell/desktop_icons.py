@@ -18,12 +18,7 @@ class DesktopIcons(Panel):
 
         super().__init__("DesktopIcons")
 
-        self.icons = [
-            ("Explorer", (70, 70)),
-            ("Browser", (70, 170)),
-            ("Terminal", (70, 270)),
-            ("Settings", (70, 370)),
-        ]
+        self.icons = []
 
     def add_icon(self, icon: Component) -> None:
 

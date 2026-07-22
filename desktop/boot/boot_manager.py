@@ -11,6 +11,7 @@ import pygame
 from desktop.boot.boot_screen import BootScreen
 from desktop.boot.login_screen import LoginScreen
 from desktop.shell.shell import Shell
+from desktop.cursor.cursor_manager import cursor_manager
 from desktop.ui.core.event import (
     KeyPressEvent,
     KeyReleaseEvent,
@@ -39,6 +40,8 @@ class BootManager:
         self.login_screen = LoginScreen()
 
         self.shell = Shell()
+
+        self.cursor = cursor_manager
 
         self.state = self.BOOT
 
@@ -97,6 +100,9 @@ class BootManager:
 
             self.shell.draw(renderer)
 
+        # Always draw cursor LAST
+        self.cursor.draw(renderer)
+
     # --------------------------------------------------
     # Events
     # --------------------------------------------------
@@ -145,8 +151,13 @@ class BootManager:
             return MouseWheelEvent(event.pos[0], event.pos[1], event.y)
 
         if event.type == pygame.KEYDOWN:
+            print("KEYDOWN:", event.key)
             modifier = self._map_modifiers(pygame.key.get_mods())
-            return KeyPressEvent(event.key, modifier)
+            return KeyPressEvent(
+                event.key,
+                event.unicode,
+                modifier,
+            )
 
         if event.type == pygame.KEYUP:
             modifier = self._map_modifiers(pygame.key.get_mods())
